@@ -67,7 +67,7 @@ function buildCaptions(svg, tl) {
     if (f) w.t = f[2];
   }));
   caps.forEach((c, i) => {
-    c.t0 = Math.min(c.t0, c.words[0].t - 0.04);
+    c.t0 = Math.max(0, Math.min(c.t0, c.words[0].t - 0.04));   // a page before 0 s shifted every drawing 0.14 s late (quantization story, Oct 2026)
     if (i > 0) caps[i - 1].t1 = Math.min(caps[i - 1].t1, c.t0);
     if (i > 0 && c.words[0].t - 0.04 > c.t0) c.t0 = c.words[0].t - 0.04;
   });
@@ -76,13 +76,13 @@ function buildCaptions(svg, tl) {
   const chars = (c) => c.words.reduce((a, w) => a + w.w.length + 1, 0);
   const LS = Object.values(T.cues || {}).map((q) => q._start);
   const lineStart = (c) => LS.some((s) => Math.abs(c.words[0].t - s) < 0.08);
-  for (let i = caps.length - 1; i > 0; i--) {
+  if (!T.capNoMerge) for (let i = caps.length - 1; i > 0; i--) {
     const a = caps[i - 1], b = caps[i];
     if ((b.t1 - b.t0 < 0.55 || a.t1 - a.t0 < 0.55) && !lineStart(b) && Math.abs(a.t1 - b.t0) < 0.02 && chars(a) + chars(b) <= 30 && a.words.length + b.words.length <= 5) {
       a.words.push(...b.words); a.t1 = b.t1; caps.splice(i, 1);
     }
   }
-  if (caps.length) caps[caps.length - 1].t1 = Math.max(caps[caps.length - 1].t1, T.total - 0.05);   // the closing words hold to the end
+  if (caps.length && !T.capNoHold) caps[caps.length - 1].t1 = Math.max(caps[caps.length - 1].t1, T.total - 0.05);   // the closing words hold to the end
   const wp = svg.querySelector("#wipes"); if (wp) svg.appendChild(wp);   // the wipe band passes over the outgoing caption
   caps.forEach((c) => {
     const P = themeAt(c.t0 + 0.06);

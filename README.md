@@ -7,8 +7,8 @@ A [Claude Code](https://claude.com/claude-code) skill that makes vertical 9:16 e
 ## What it does
 
 - **The look:** hand-drawn rough.js shapes that "boil" like a sketch video, Excalifont handwriting, a dark board, or light and dark boards mixed by story section with a hand-drawn wipe between them.
-- **The story:** three story shapes that held viewers past the halfway point: a hero story and a problem story (40-55 s), and a step-by-step breakdown (about 100 s). It includes a retention checklist and writing rules that make a script sound like a person talking, not like ad copy.
-- **The motion:** a live-drawing feel (strokes draw on, notes write themselves, stamps slam), a calm camera that moves across one board, a hand-drawn hero that acts out each line, and word-by-word captions.
+- **The story:** a connected story (about 60 s: one character, one object carried through every shot, each line caused by the one before), plus a hero story and a problem story (40-55 s) and a step-by-step breakdown (about 100 s). It includes a retention checklist and writing rules that make a script sound like a person talking, not like ad copy.
+- **The motion:** a live-drawing feel (strokes draw on, notes write themselves, stamps slam), one board of stations that is never cleared, a calm camera that travels from cause to effect and pulls back for a recap, a hand-drawn hero that acts out each line, and word-by-word captions.
 - **The review:** checks for empty frames, text that runs out of its box, caption timing, and a fresh independent review after every render.
 
 ## Files
@@ -22,7 +22,7 @@ A [Claude Code](https://claude.com/claude-code) skill that makes vertical 9:16 e
 | `assets/excal_theme.js` | The theme: palettes, captions, theme switching, caption timing fixes. |
 | `assets/rough.js` | rough.js 4.6.6, patched to use a seeded random generator. |
 | `assets/fonts/` | Excalifont and Comic Shanns. |
-| `examples/` | Three finished reels: `valor` (hero story), `jev` (problem story), `valor_breakdown` (breakdown, light and dark). Each has `lines.py` (script and voice settings), `scenes.js` (the animation), `sfx.py` (sound effects), and `music.py` where used. |
+| `examples/` | Four finished reels: `quant_story` (connected story about AI quantization, one board with dark and light rows; its `scenes.js` is built from `src/` by `build_scenes.sh`, with measured word times from `gen_caps.py`), `valor` (hero story), `jev` (problem story), `valor_breakdown` (breakdown, light and dark). Each has `lines.py` (script and voice settings), `scenes.js` (the animation), `sfx.py` (sound effects), and `music.py` where used. |
 
 ## Requirements
 

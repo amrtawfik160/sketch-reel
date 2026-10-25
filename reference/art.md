@@ -30,10 +30,21 @@ The user asked for both themes mixed, by story section, and liked the result (`e
 - **Two palettes:** `DT` (dark: `PAPER` #121212, `INK` #d3d3d3, `EX` through `dk()`) and `LT` (light: `PAPER` #ffffff, `INK` #1e1e1e, `INK2` #495057, `EX` = `EXL`, the raw Excalidraw colours). A scene draws each section with the palette of its theme; never mix the two inside one section.
 - **`THEME_SW = [[t, "light" | "dark"], ...]`,** set in `scene()`, tells the captions which theme is on screen. Each caption phrase takes the palette of the theme on screen when it starts.
 - **Switch only at a line start,** about 0.03 s before the line's `_start`, when the outgoing section is done. Give each section its own board, so nothing from the old theme stays on screen.
-- **One switch style for the whole reel: the wipe** (`wipe(t, toDark, dir)` in `examples/valor_breakdown/scenes.js`). A hachured band in the next theme's paper colour sweeps across in 0.32 s, alternating direction. When it covers the frame, the ground, the board and the camera cut together. The wipe layer draws above the captions, so the band covers the outgoing caption; a caption left on top showed in the old colours with a thick outline over the new board.
+- **One switch style for the whole reel: the wipe, or the tilt on a station board** (see One board with stations below). The wipe (`wipe(t, toDark, dir)` in `examples/valor_breakdown/scenes.js`) is a hachured band in the next theme's paper colour that sweeps across in 0.32 s, alternating direction. When it covers the frame, the ground, the board and the camera cut together. The wipe layer draws above the captions, so the band covers the outgoing caption; a caption left on top showed in the old colours with a thick outline over the new board.
 - **Sections that worked:** dark for the hook, the machinery and the stop; light for the friendly request, the receipt and ledger, and the ending. Five switches in 102 s felt intentional, not busy.
 - **Check every colour in both themes.** Grey annotations that read on white were too dim on #121212; on dark boards use a light grey (#b9bec5) for secondary text.
 - **Tom's real photo** goes inside a drawn ring or polaroid frame (`<image>` clipped to a circle, with a rough.js ring on top), so it belongs to the board.
+
+## One board with stations (the connected story)
+
+The look the user loved most (the quantization story, `examples/quant_story/src/story4.js`): the whole reel is one board that is never cleared, and the camera travels across it.
+
+- **Stations on a grid:** 3 columns × 2 rows (`COLX = [0, 1200, 2400]`, `ROWY = [0, 2700]`). Each station holds one step of the story: the theory, the numbers, the answer on the top row; the quote, the daily test, the dial on the bottom row. Drawings stay where they were made, so when the camera passes or pulls back, the viewer sees the story so far.
+- **The two rows are the two themes:** the top row is the dark board and the bottom row the light board. The theme changes when the camera tilts across the edge between them, on the line that turns the story ("So I checked"). It replaced the wipe: one switch, and it is caused by the story.
+- **The grounds are drawn edge to edge** in an unclipped copy of the camera group placed before `SAFE` (`BGO`), so the margins outside the safe frame show the right colour during the tilt.
+- **The cast lives in screen space, always on screen:** the narrator on the left, the character (Sam: red cap, phone) on the right, both about 1.6× the usual figure size so their reactions read. They walk in place while the camera travels. The character's bubbles are size 60+ and change on the word that causes them ("see?!" on "faster and cheaper", popped on "So I checked", "hmm…" on "no drop", "aha!" on "thinks less", "thanks!" on "tip").
+- **Frame one shows the character and the belief:** Sam frowning at "Claude got dumber!" on frame 0; the theory cloud grows from his head within 3 s.
+- **The recap is the board itself:** on the close the camera pulls back over the whole board. Each station gets a numbered label (44 px) in story order, the two rows get titles ("Sam's theory", "what really happened"), and the arrows between stations reappear. Keep the pulled-back board inside x 120-960; a zoom that pushed it to 66 px from the edge was reverted.
 
 ## Type
 

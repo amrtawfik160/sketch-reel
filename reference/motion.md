@@ -39,6 +39,9 @@ Pass `boil: false` for shapes that move fast or sit inside a pose drawing.
   | Jolt or shake | on a slam (STOP, the reveal), built on the current framing so it never snaps back to wide |
 
 - **During a push or a dive,** fade out what the zoom would cut at the safe-frame edge, and fade it back in on the way out.
+- **On a station board, the camera travels only from cause to effect** (`examples/quant_story/src/story4.js`): right to the model box on "So I opened up a model", right to the chat on "Every word Claude writes", down from the dark row to the light row on "So I checked", left along the bottom row through the evidence. Each move is 0.5-0.6 s and settles before the next word that matters.
+  - **Never go backwards.** A pan ahead to the chat followed by a pan back to the numbers was the one place the reviewer lost track. When two stations must be seen together, pull back to frame both (the number pile with arrows into the chat), then push in on the next one.
+  - **The final pull-back is the payoff:** the whole board, numbered in story order, while the voice asks to follow.
 
 ## Physical motion
 
@@ -75,6 +78,12 @@ Pass `boil: false` for shapes that move fast or sit inside a pose drawing.
 12. **A plain recap.** Three bare number boxes undersold the callback. Pair each number with its earlier scene: a mini activity grid beside 954, a crossed-out "human click" tag beside 0, a STOP stamp beside 1.
 13. **A still end card.** Seven seconds of a static address lost the ending. Keep the address still and readable, and give the board small life around it: the hero waves, Tom's photo pops in with a thumbs-up, sparkles twinkle.
 
+14. **An effect before its cause.** The model box shrank while the voice was still reading the number, then the picture stood still for 2.5 s during the line that explains the shrink. Every change fires on the word that names it: the shrink on "whole model", "3× smaller!" on "smaller", the price tag on "cheaper".
+15. **A bubble that outlives its meaning.** Sam's "see?!" stayed up for 16 s and returned next to the evidence against him. A reaction ends when its cause ends, and the next reaction replaces it on its own word.
+16. **The whole picture running 0.14 s late.** The first caption page started at -0.14 s, which shifted every drawing and camera move behind the voice. `excal_theme.js` now clamps page starts at 0; after any caption change, check that a frame-one event lands on its word (Sam's cap colour was due at 39.17 s and drew at 39.32 s).
+17. **Caption words on the transcriber's times.** The build's word times split numbers ("0 .0372", "65 ,000", "5 .5") and give two words one time. For number-heavy lines, measure the narration with faster-whisper medium (`examples/quant_story/src/measure_words.py` writes `words_measured.json`) and generate the caption pages and per-word times from it (`gen_caps.py` writes `caps_gen.js`: each number in one page, pages break at punctuation, each page opens 0.04-0.14 s before its first word). Time scenes from those measured times too (`wt(line, word)`).
+18. **The Follow button after the ask.** A 1.3 s recap hold put the button 2 s after the spoken "follow". The button pops on the word and is clicked within 0.6 s; the recap can finish folding in behind it.
+
 ## Sound (`sfx.py`)
 
 - **Quiet physical sounds tied to visible events** from `scripts/sfxlib.py`:
@@ -106,6 +115,6 @@ On top of explainer-reel steps 8-9:
    - effects that carry no meaning (sparkles, glows, confetti);
    - empty frames;
    - motion with no cause.
-4. **Run `safe_check.py`.** It measures against the frame's median colour, so it works on the dark canvas unchanged. Single frames at 104-108 px during a whip or a slide-in are acceptable; held content is not.
+4. **Run `safe_check.py`.** It measures against the frame's median colour, so it works on the dark canvas unchanged. Single frames at 104-108 px during a whip or a slide-in are acceptable; held content is not. On a station board it reports FAIL during camera travel, the tilt and the half-dark/half-light recap by design; check held frames yourself and measure the recap board's edges (x 120-960).
 5. **Get an independent review every round.** After each render, a fresh general-purpose subagent that has not seen your reasoning reviews the final: it reads every sheet, seeks every line start and every wipe, and reports P1/P2/P3 with timestamps and evidence frames. Fix everything it finds, then verify each fix with exact seeks before delivering. Each round found 2-3 defects the builder's own pass missed.
 6. **Transcribe the full mix.** A name that comes back wrong (Jev as "Jeff") is fine only if that line, transcribed alone, reads right.
