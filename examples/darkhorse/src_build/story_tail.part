@@ -1,0 +1,17 @@
+  // ---------- the boil clock ----------
+  FIGS.forEach((Fg) => Fg.keys.sort((a, b) => a[0] - b[0]));
+  const boilAt = (v0) => {
+    const k = Math.max(0, Math.floor(v0 / BOIL_DT));
+    for (const it of BOIL) {
+      const i = (k + it.ph) % 3;
+      if (i !== it.cur) { it.vars[it.cur].setAttribute("visibility", "hidden"); it.vars[i].setAttribute("visibility", "visible"); it.cur = i; }
+    }
+    HOOKS.forEach((f) => f(v0));
+  };
+  const clock = { v: 0 };
+  B.fromTo(clock, { v: 0 }, { v: END_T, duration: END_T, ease: "none", immediateRender: false, onUpdate: () => boilAt(clock.v) }, 0);
+  boilAt(0);
+  const CA = A(CAM, F(0, 0, 0.97));
+  camQ.sort((a, b) => a[0] - b[0]).forEach(([t, p, dur, ease]) => CA.to(p, t, dur, ease));
+  return {};
+}

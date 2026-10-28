@@ -4,49 +4,85 @@ A [Claude Code](https://claude.com/claude-code) skill that makes vertical 9:16 e
 
 ![Eight frames from the Valor breakdown reel](reference/look.png)
 
+Everything the skill needs is in this repository: the method, the theme, the build pipeline, and five finished example reels. You supply an OpenAI API key for the voice.
+
 ## What it does
 
-- **The look:** hand-drawn rough.js shapes that "boil" like a sketch video, Excalifont handwriting, a dark board, or light and dark boards mixed by story section with a hand-drawn wipe between them.
-- **The story:** a connected story (about 60 s: one character, one object carried through every shot, each line caused by the one before), plus a hero story and a problem story (40-55 s) and a step-by-step breakdown (about 100 s). It includes a retention checklist and writing rules that make a script sound like a person talking, not like ad copy.
-- **The motion:** a live-drawing feel (strokes draw on, notes write themselves, stamps slam), one board of stations that is never cleared, a calm camera that travels from cause to effect and pulls back for a recap, a hand-drawn hero that acts out each line, and word-by-word captions.
-- **The review:** checks for empty frames, text that runs out of its box, caption timing, and a fresh independent review after every render.
+- **The look:** hand-drawn rough.js shapes that "boil" like a sketch video, and Excalifont handwriting. The board is dark, or light and dark boards are mixed by story section with a hand-drawn wipe between them.
+- **The story:** five arcs, each with a finished example:
+  - a connected story (about 60 s: one character, one object carried through every shot, each line caused by the one before);
+  - a discovery story (about 55 s: a narrator telling a friend about a site or a list, with one favourite told properly);
+  - a hero story and a problem story (40-55 s);
+  - a step-by-step breakdown (about 100 s).
+- **The writing:** a retention checklist, and rules that make a script sound like a person talking, not like ad copy.
+- **The motion:** a live-drawing feel, with strokes that draw on, notes that write themselves and stamps that slam. It uses one board of stations that is never cleared, and a calm camera that travels from cause to effect. A hand-drawn hero acts out each line, and captions appear word by word.
+- **The pipeline:** an OpenAI voice whose every line is checked against the script, measured word timings, captions, music with ducking, sound effects, a HyperFrames build, and an MP4 render.
+- **The review:** checks for empty frames, text that runs out of its box, caption timing, and content in the phone's side crop zone. A fresh, independent review follows every render.
+
+## Requirements
+
+- [Claude Code](https://claude.com/claude-code), or another agent that can load a skill folder and run shell commands.
+- Node.js 18 or newer. [HyperFrames](https://www.npmjs.com/package/hyperframes) runs through `npx` and downloads a headless Chrome on first use.
+- Python 3.10 or newer, and ffmpeg.
+- An OpenAI API key with access to `gpt-audio-1.5`, in `OPENAI_API_KEY`.
+- About 2 GB of disk for the faster-whisper models and the browser, and about 1-2 GB per reel project while it builds.
+
+## Install
+
+1. Clone the repository into your Claude Code skills folder:
+
+   ```bash
+   git clone https://github.com/amrtawfik160/sketch-reel ~/.claude/skills/sketch-reel
+   ```
+
+2. Run the one-time setup. It installs KaTeX and a font into `~/.cache/explainer-reel`, and makes a Python venv at `~/.venvs/mer` with numpy, scipy, soundfile and faster-whisper:
+
+   ```bash
+   bash ~/.claude/skills/sketch-reel/pipeline/scripts/setup.sh
+   ```
+
+   To use a Python you already have, set `MER_PYTHON` to it first.
+
+3. Export your key: `export OPENAI_API_KEY=...`
+
+## Use
+
+Ask Claude Code for a reel, for example:
+
+> Make a sketch-style reel about https://github.com/some/repo
+
+The skill then works in this order:
+1. It researches the subject.
+2. It shows you 3 hooks and a script table to approve.
+3. After your approval, it voices, animates, builds, reviews and renders the reel.
+
+It delivers an MP4 and a cover image, and it posts nothing unless you ask.
 
 ## Files
 
 | Path | What it holds |
 |---|---|
 | `SKILL.md` | The steps, from research to delivery. |
-| `reference/story.md` | Story shapes, the retention ladder, the writing rules, the voice. |
-| `reference/art.md` | Colours (Excalidraw dark and light), type, shapes, the board, characters, detail kit. |
+| `reference/script.md` | Hooks, the shape of a reel, length, and the claims rules. |
+| `reference/story.md` | The arcs, the retention ladder, the writing rules, the voice. |
+| `reference/art.md` | Colours (Excalidraw dark and light), type, shapes, the board, characters, the detail kit. |
 | `reference/motion.md` | Boiling lines, drawing on, the camera, physical motion, known glitches and their fixes, sound, review. |
-| `assets/excal_theme.js` | The theme: palettes, captions, theme switching, caption timing fixes. |
-| `assets/rough.js` | rough.js 4.6.6, patched to use a seeded random generator. |
-| `assets/fonts/` | Excalifont and Comic Shanns. |
-| `examples/` | Four finished reels: `quant_story` (connected story about AI quantization, one board with dark and light rows; its `scenes.js` is built from `src/` by `build_scenes.sh`, with measured word times from `gen_caps.py`), `valor` (hero story), `jev` (problem story), `valor_breakdown` (breakdown, light and dark). Each has `lines.py` (script and voice settings), `scenes.js` (the animation), `sfx.py` (sound effects), and `music.py` where used. |
+| `reference/pipeline.md` | Setup, every command, `lines.py` settings, the scene contract. |
+| `pipeline/scripts/` | `make_reel.py` (voice, word timings, captions, music, build), `sfxlib.py` (sound effects), `check_vo.py` (checks each voice line against the script), `tighten.py` (shortens long pauses), `measure_words.py` (exact word times), `review_sheet.sh`, `safe_check.py`, `setup.sh`. |
+| `pipeline/assets/` | The HyperFrames page template and the drawing runtime. |
+| `assets/` | The sketch theme (`excal_theme.js`), rough.js 4.6.6 patched to use a seeded random generator, and the Excalifont and Comic Shanns fonts. |
+| `examples/` | Five finished reels: `darkhorse` (discovery story), `quant_story` (connected story), `valor` (hero story), `jev` (problem story), `valor_breakdown` (breakdown). Each has `lines.py` (script, sources and voice settings), `scenes.js` (the animation) and `sfx.py` (sound effects). `darkhorse` and `quant_story` build `scenes.js` from parts with `build_scenes.sh`. |
 
-## Requirements
+## Costs
 
-This skill adds the style, story method and animation system. It runs on a separate pipeline skill, `explainer-reel`, which is not in this repository. That pipeline provides `make_reel.py` (voice, word timings, captions, music, build), `sfxlib.py`, `review_sheet.sh` and `safe_check.py`. The script step also uses a `reel-script` skill. You need:
-
-- HyperFrames (`npx hyperframes`) to check and render the HTML composition to MP4;
-- an OpenAI API key for the voice (`gpt-audio-1.5`);
-- Python with numpy, scipy, soundfile and faster-whisper for word timings;
-- ffmpeg.
-
-## Install
-
-Copy the folder into your Claude Code skills directory:
-
-```bash
-git clone https://github.com/amrtawfik160/sketch-reel ~/.claude/skills/sketch-reel
-```
-
-Then ask Claude Code for a reel "in the sketch style".
+- **Voice:** each spoken line is one `gpt-audio-1.5` request, with up to 3 retries when the transcript differs from the script. A 9-line reel uses about 10-20 requests. Voice files are cached in the project's `vo/` folder, so rebuilding costs nothing.
+- **Everything else** runs locally.
 
 ## Notes
 
-- The people and products in the examples are real (Valor, an AI engineer built by Tom Counsell; Jev, an AI decision model). Company names of Valor's clients are replaced with "Client A" to "Client F".
-- Facts in the example scripts were checked against their sources in October 2026; each `lines.py` lists them.
+- The people and products in the examples are real: Valor, an AI engineer built by Tom Counsell; Jev, an AI decision model; Dark Horse Labs, a list of open-source projects. The names of Valor's client companies are replaced with "Client A" to "Client F".
+- The facts in the example scripts were checked against their sources in October 2026. Each `lines.py` (and `examples/darkhorse/script.md`) lists them.
+- The reference files record what worked and what failed on real reels. "The creator" in them is the person those reels were made for.
 
 ## License
 

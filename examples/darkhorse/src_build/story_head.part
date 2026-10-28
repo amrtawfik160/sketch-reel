@@ -1,0 +1,102 @@
+  // ====================================================================================================
+  // captions (pre-chunked by gen_caps.py), word times, framing
+  // ====================================================================================================
+  TL_.captions = CAPS; TL_.capNoMerge = true; TL_.capNoHold = false;
+  buildCaptions = function (svg, tl) {   // the factory reel's caption builder, one (dark) theme
+    const Y = TL_.captionY || 1450, MAXW = 840;
+    const g = el("g", { id: "captions" }, svg);
+    const caps = TL_.captions.map((q) => ({ ...q, words: q.words.map((w) => ({ ...w })) }));
+    caps.forEach((q, i) => {
+      q.t0 = Math.max(0, Math.min(q.t0, q.words[0].t - 0.04));
+      if (i > 0) caps[i - 1].t1 = Math.min(caps[i - 1].t1, q.t0);
+    });
+    caps[caps.length - 1].t1 = TL_.total - 0.05;   // the closing words hold to the end
+    caps.forEach((q) => {
+      const Pl = DT;
+      const cg = el("g", { opacity: 0 }, g);
+      let size = 76;
+      const ws = q.words.map((w) => txt(cg, w.w, { "font-family": HAND, "font-size": size, fill: Pl.INK, stroke: Pl.PAPER, "stroke-width": 14, "paint-order": "stroke", "stroke-linejoin": "round", y: Y }));
+      const lay = () => {
+        const wd = ws.map((t) => t.getComputedTextLength()), gap = size * 0.3;
+        const total = wd.reduce((a, b) => a + b, 0) + gap * (ws.length - 1);
+        let x = 540 - total / 2;
+        ws.forEach((t, i) => { t.setAttribute("x", x); x += wd[i] + gap; });
+        return total;
+      };
+      const total = lay();
+      if (total > MAXW) { size = Math.floor((size * MAXW) / total); ws.forEach((t) => t.setAttribute("font-size", size)); lay(); }
+      tl.fromTo(cg, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04, ease: "power2.out" }, q.t0);
+      tl.fromTo(cg, { opacity: 1 }, { opacity: 0, duration: 0.001, immediateRender: false }, q.t1);
+      q.words.forEach((w, i) => {
+        tl.fromTo(ws[i], { fill: Pl.INK }, { fill: Pl.EX.blue, duration: 0.02 }, w.t);
+        if (i < q.words.length - 1) tl.fromTo(ws[i], { fill: Pl.EX.blue }, { fill: Pl.INK, duration: 0.02, immediateRender: false }, q.words[i + 1].t);
+      });
+    });
+  };
+  const wnorm = (s) => { s = s.toLowerCase().trim(); return /^\d+\.\d+$/.test(s) ? s : s.replace(/[^a-z0-9]/g, ""); };
+  const wt = (lid, word, n = 0, end = false) => {
+    const hits = WT[lid].filter((x) => x[0] === wnorm(word));
+    if (!hits[n]) throw new Error(`no measured word ${lid} ${word} #${n}`);
+    return hits[n][end ? 2 : 1];
+  };
+  const L0 = (lid) => WT[lid][0][1];                       // a line's first spoken word
+  const PRE = (lid) => L0(lid) - 1.0;                      // a station is drawn, frame and content, off screen before the camera comes
+  const END_T = TL_.total;
+  const fitT = (e, maxW) => { const w = e.getComputedTextLength(); if (w > maxW) e.setAttribute("font-size", (parseFloat(e.getAttribute("font-size")) * maxW) / w); return e; };
+  const ring = (p, x, y, w, h, col, t, sw = 5) => { const r = rell(p, x, y, w, h, { stroke: col, strokeWidth: sw, roughness: 1.3 }); drawIn(r, t, 0.3); return r; };
+  const later = (n, t, d = 0.12) => { show(n, t, d); return n; };
+  const fade = (n, t, d = 0.2, to = 0) => tw(n, { opacity: 1 }, { opacity: to, duration: d, immediateRender: false }, t);
+  const pop = (n, t, x, y, s1 = 1, r = 0) => { const a = GA(n, { x, y, s: 0.2, o: 0, r }); a.to({ o: 1, s: s1 }, t, 0.3, "back.out(2)"); return a; };
+  const at = (p, x, y) => G(p, { transform: `translate(${x},${y})` });
+  const MAXW = 810;   // a station's content width (x 135-945): about 84 % of the phone-safe width
+  // a station headline: written on its word, fitted to the station width, lifted out at t1
+  const head = (p, s, t0, t1, col = INK, size = 96, y = 430, cps = 34) => {
+    const g = G(p, { opacity: 0 });
+    const e = T(g, s, 540, y, size, col, { ...MID, ...HALO() });
+    fitT(e, MAXW);
+    typeOn(e, t0, s.length / cps);
+    show(g, t0);
+    if (t1) tw(g, { opacity: 1, y: 0 }, { opacity: 0, y: -18, duration: 0.16, ease: "power2.in" }, t1);
+    g._e = e;
+    return g;
+  };
+
+  // ---------- the board: 3 columns x 2 rows, one dark Excalidraw canvas ----------
+  const COLX = [0, 1150, 2300], ROWY = [0, 1700];
+  const station = (col, row) => {
+    setTheme(true);
+    const g = G(D, { transform: `translate(${COLX[col]},${ROWY[row]})` });
+    return { g, col, row, back: G(g), mid: G(g), top: G(g), fx: G(g) };
+  };
+  const C = (wx, wy, s, sx = 540, sy = 760) => ({ s, x: sx - s * wx, y: sy - s * wy });
+  const FS = 1.12, F = (col, row, m = 1) => C(COLX[col] + 540, ROWY[row] + 810, FS * m, 540, 820);   // one station, ~84 % of the safe width
+  let camLast = F(0, 0);
+  // a move settles 0.1 s after the line's first word; nothing on the new station starts before then
+  const travel = (p, lid, dur = 0.4, back = 14, xf = false) => {
+    if (xf) {   // a quick dip through the paper colour: no other row slides under the captions
+      const tc = L0(lid) - 0.12;
+      tw(D, { opacity: 1 }, { opacity: 0, duration: 0.14, ease: "power2.in", immediateRender: false }, tc - 0.14);
+      cam(p, tc, 0.01, "none");
+      tw(D, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out", immediateRender: false }, tc + 0.02);
+      camLast = p;
+      return;
+    }
+    const t = L0(lid) + 0.1 - dur;
+    const dx = Math.sign(p.x - camLast.x) * back, dy = Math.sign(p.y - camLast.y) * back;
+    cam({ s: camLast.s, x: camLast.x - dx, y: camLast.y - dy }, t - 0.1, 0.1, "power1.out");
+    cam(p, t, dur, "expo.inOut");
+    camLast = p;
+  };
+  const LAND = (lid) => L0(lid) + 0.12;   // the camera has settled: headlines start here
+
+  const tickPop = (p, x, y, t, s = 1.3, col = EX.green) => { const g = G(p); tick(g, 0, 0, s, col, 7); pop(g, t, x, y); return g; };
+  // a bar that rises from its base on its word (a widening clip)
+  const rise = (p, x, yB, w, h, o, t, dur = 0.55, horiz = false, ease = "power3.out") => {
+    const id = "rb" + (SEED++), cp = el("clipPath", { id, clipPathUnits: "userSpaceOnUse" }, defs);
+    const r = horiz ? el("rect", { x: x - 10, y: yB - 20, width: 0, height: h + 40 }, cp) : el("rect", { x: x - 20, y: yB + 10, width: w + 40, height: 0 }, cp);
+    const g = G(p, { "clip-path": `url(#${id})` });
+    if (horiz) rr(g, x, yB, w, h, o); else rr(g, x, yB - h, w, h, o);
+    if (horiz) tw(r, { attr: { width: 0 } }, { attr: { width: w + 30 }, duration: dur, ease }, t);
+    else tw(r, { attr: { y: yB + 10, height: 0 } }, { attr: { y: yB - h - 20, height: h + 30 }, duration: dur, ease }, t);
+    return g;
+  };

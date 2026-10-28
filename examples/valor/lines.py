@@ -1,4 +1,4 @@
-"""Valor reel: one AI engineer working for six companies (explainer-reel project, dark Excalidraw style like the Jev reel).
+"""Valor reel: one AI engineer working for six companies (dark Excalidraw style like the Jev reel).
 Claims, all from github.com/tomcounsell/ai (checked 22 Oct 2026):
 - projects/*.toml: 13 project specs, each naming a client; the companies among them are client-a, client-b, client-c, client-d,
   client-e, client-f (six; "counsell" is Tom's own home project). Machines named "Valor the Pirate/Cowboy/Bald/Captain".

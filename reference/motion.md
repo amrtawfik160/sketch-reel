@@ -1,6 +1,6 @@
 # Motion: a board that is being drawn, live
 
-The explainer-reel seek-safety rules apply in full: frames render out of order, so every state comes from the B timeline at absolute times. This file covers what the sketch style adds. The code for each item is in `examples/valor/scenes.js`.
+The seek-safety rule in [`pipeline.md`](pipeline.md) applies in full: frames render out of order, so every state comes from the B timeline at absolute times. This file covers what the sketch style adds. The code for each item is in `examples/valor/scenes.js`.
 
 ## Boiling lines
 
@@ -83,10 +83,13 @@ Pass `boil: false` for shapes that move fast or sit inside a pose drawing.
 16. **The whole picture running 0.14 s late.** The first caption page started at -0.14 s, which shifted every drawing and camera move behind the voice. `excal_theme.js` now clamps page starts at 0; after any caption change, check that a frame-one event lands on its word (Sam's cap colour was due at 39.17 s and drew at 39.32 s).
 17. **Caption words on the transcriber's times.** The build's word times split numbers ("0 .0372", "65 ,000", "5 .5") and give two words one time. For number-heavy lines, measure the narration with faster-whisper medium (`examples/quant_story/src/measure_words.py` writes `words_measured.json`) and generate the caption pages and per-word times from it (`gen_caps.py` writes `caps_gen.js`: each number in one page, pages break at punctuation, each page opens 0.04-0.14 s before its first word). Time scenes from those measured times too (`wt(line, word)`).
 18. **The Follow button after the ask.** A 1.3 s recap hold put the button 2 s after the spoken "follow". The button pops on the word and is clicked within 0.6 s; the recap can finish folding in behind it.
+19. **A travelling counter that shows the old number.** In the Dark Horse Labs reel the star note flew to the firstmate station still reading the previous item's 26,016, then changed to 8,380 on "eight". Fold the old number out as the note lifts off, and write the new one as it lands or on its word, so no frame pairs a number with the wrong item.
+20. **A recap with no time to read.** The pull-back over the whole board held for about 0.5 s, because the last line started with the address. The build check flagged its labels as on screen too briefly to read. Either give the recap its own short spoken beat before the address (at least 1.2 s), or skip the recap and go straight to the end card.
+21. **A progress track keeps a list moving.** A small hand-drawn horse on a race track along the bottom stepped forward on every line from the list reveal and crossed the finish on the last line. It gave a five-station list the feeling of one race. Keep the track below the stations and above the captions, and give it one step per line.
 
 ## Sound (`sfx.py`)
 
-- **Quiet physical sounds tied to visible events** from `scripts/sfxlib.py`:
+- **Quiet physical sounds tied to visible events** from `pipeline/scripts/sfxlib.py`:
 
   | Sound | Event |
   |---|---|
@@ -106,15 +109,15 @@ Pass `boil: false` for shapes that move fast or sit inside a pose drawing.
 
 ## Review
 
-On top of explainer-reel steps 8-9:
+On top of the render steps in [`pipeline.md`](pipeline.md):
 
 1. **Read every review sheet.** Then crop a few frames at full size: the detail quality only shows there.
 2. **Strip every moving list, drain, and pile frame by frame** at 12-30 fps with exact seeks (`ffmpeg -ss` per frame, or `fps` without `select`). Confirm no two rows' text overlaps in any frame.
-3. **Run the render review checklist** in `~/.claude/skills/motionmaxxing/references/slop.md`:
+3. **Run the render review checklist**, and fix every case of:
    - uniform pop-ins;
    - effects that carry no meaning (sparkles, glows, confetti);
    - empty frames;
    - motion with no cause.
-4. **Run `safe_check.py`.** It measures against the frame's median colour, so it works on the dark canvas unchanged. Single frames at 104-108 px during a whip or a slide-in are acceptable; held content is not. On a station board it reports FAIL during camera travel, the tilt and the half-dark/half-light recap by design; check held frames yourself and measure the recap board's edges (x 120-960).
+4. **Run `pipeline/scripts/safe_check.py`.** It measures against the frame's median colour, so it works on the dark canvas unchanged. Single frames at 104-108 px during a whip or a slide-in are acceptable; held content is not. On a station board it reports FAIL during camera travel, the tilt and the half-dark/half-light recap by design; check held frames yourself and measure the recap board's edges (x 120-960).
 5. **Get an independent review every round.** After each render, a fresh general-purpose subagent that has not seen your reasoning reviews the final: it reads every sheet, seeks every line start and every wipe, and reports P1/P2/P3 with timestamps and evidence frames. Fix everything it finds, then verify each fix with exact seeks before delivering. Each round found 2-3 defects the builder's own pass missed.
 6. **Transcribe the full mix.** A name that comes back wrong (Jev as "Jeff") is fine only if that line, transcribed alone, reads right.
