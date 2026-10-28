@@ -1,4 +1,4 @@
-"""Excalidraw look: rough.js shapes, Excalifont, white canvas (excal_theme.js). Jev reel, story version (explainer-reel project, fast story with a stick-figure hero).
+"""Excalidraw look: rough.js shapes, Excalifont, white canvas (excal_theme.js). Jev reel, story version (fast story with a stick-figure hero).
 Claims: TechCrunch (16 Oct 2026, Vercel AI gateway data): 35% of paid teams on Vercel's AI gateway used Jev within two weeks of launch,
 the fastest adoption of any model in its first two weeks; Vercel used Jev to replace a larger model for classifying harmful commands.
 typesafe.ai/blog/introducing-system-one-models-and-jev (early access 15 Sep 2026): Jev gives up string generation; "unstructured state

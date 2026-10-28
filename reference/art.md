@@ -25,7 +25,7 @@ The look is Excalidraw's own dark mode, exactly, and its light mode when a reel 
 
 ## Light and dark boards
 
-The user asked for both themes mixed, by story section, and liked the result (`examples/valor_breakdown/`). `assets/excal_theme.js` supports both and stays dark unless a reel switches:
+The creator asked for both themes mixed, by story section, and liked the result (`examples/valor_breakdown/`). `assets/excal_theme.js` supports both and stays dark unless a reel switches:
 
 - **Two palettes:** `DT` (dark: `PAPER` #121212, `INK` #d3d3d3, `EX` through `dk()`) and `LT` (light: `PAPER` #ffffff, `INK` #1e1e1e, `INK2` #495057, `EX` = `EXL`, the raw Excalidraw colours). A scene draws each section with the palette of its theme; never mix the two inside one section.
 - **`THEME_SW = [[t, "light" | "dark"], ...]`,** set in `scene()`, tells the captions which theme is on screen. Each caption phrase takes the palette of the theme on screen when it starts.
@@ -37,7 +37,7 @@ The user asked for both themes mixed, by story section, and liked the result (`e
 
 ## One board with stations (the connected story)
 
-The look the user loved most (the quantization story, `examples/quant_story/src/story4.js`): the whole reel is one board that is never cleared, and the camera travels across it.
+The look the creator loved most (the quantization story, `examples/quant_story/src/story4.js`): the whole reel is one board that is never cleared, and the camera travels across it.
 
 - **Stations on a grid:** 3 columns × 2 rows (`COLX = [0, 1200, 2400]`, `ROWY = [0, 2700]`). Each station holds one step of the story: the theory, the numbers, the answer on the top row; the quote, the daily test, the dial on the bottom row. Drawings stay where they were made, so when the camera passes or pulls back, the viewer sees the story so far.
 - **The two rows are the two themes:** the top row is the dark board and the bottom row the light board. The theme changes when the camera tilts across the edge between them, on the line that turns the story ("So I checked"). It replaced the wipe: one switch, and it is caused by the story.

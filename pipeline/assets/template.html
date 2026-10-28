@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<title>__TITLE__</title>
+<link rel="stylesheet" href="katex.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+@font-face { font-family: "Jakarta"; src: url("fonts/PlusJakartaSans.ttf") format("truetype"); font-weight: 200 800; }
+body { margin: 0; background: #0d1117; }
+#root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #0d1117; color: #e6edf3; }
+#fxwrap { position: absolute; left: 0; right: 0; top: 250px; height: 200px; z-index: 2; }
+.fx { position: absolute; left: 0; right: 0; top: 0; height: 200px; display: flex; align-items: center; justify-content: center; font-size: 66px; color: #e6edf3; opacity: 0; white-space: nowrap; }
+__FORMULA_CSS__
+#stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+#stage svg { display: block; }
+#rw { position: absolute; left: 0; right: 0; top: 1450px; height: 120px; display: flex; justify-content: center; align-items: center; opacity: 0; }
+#vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 42%, transparent 50%, rgba(0,0,0,0.45) 100%); }
+#fcard { position: absolute; left: 0; right: 0; top: 820px; display: flex; flex-direction: column; align-items: center; opacity: 0; }
+#fbtn { position: relative; width: 460px; height: 132px; }
+#fring { position: absolute; inset: 0; border-radius: 66px; border: 4px solid #58a6ff; opacity: 0; }
+.fb { position: absolute; inset: 0; border-radius: 66px; display: flex; align-items: center; justify-content: center; font-family: "Jakarta", sans-serif; font-weight: 800; font-size: 62px; }
+#foff { background: #e6edf3; color: #0d1117; }
+#fon { background: #0d1117; color: #e6edf3; border: 4px solid #e6edf3; box-sizing: border-box; opacity: 0; font-size: 56px; }
+#fsub { margin-top: 44px; font-family: "KaTeX_Main", serif; font-style: italic; font-size: 48px; color: #c9d1d9; opacity: 0; }
+#fptr { position: absolute; left: 404px; top: 86px; width: 90px; height: 120px; opacity: 0; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920" data-duration="__TOTAL__">
+  <div id="world">
+    <div id="fxwrap">__FORMULAS__</div>
+    <div id="stage"></div>
+  </div>
+  <div id="rw"><svg width="160" height="90" viewBox="0 0 160 90"><path d="M78 10 L18 45 L78 80Z M146 10 L86 45 L146 80Z" fill="#e6edf3"/></svg></div>
+  <div id="fcard">
+    <div id="fbtn"><div id="fring"></div><div class="fb" id="foff">+ Follow</div><div class="fb" id="fon">Following</div>
+      <svg id="fptr" viewBox="0 0 90 120"><path d="M6 4 L6 96 L30 74 L48 112 L66 103 L48 66 L82 64Z" fill="#e6edf3" stroke="#0d1117" stroke-width="7" stroke-linejoin="round"/></svg></div>
+    <div id="fsub">__FOLLOW_SUB__</div>
+  </div>
+  <div id="vignette"></div>
+  <audio id="mix" src="audio/mix.wav" data-start="0" data-duration="__TOTAL__" data-track-index="10" data-volume="1"></audio>
+</div>
+<script>
+const T = __TIMELINE__;
+__LIB__
+__SCENES__
+boot(scene);
+</script>
+</body>
+</html>
