@@ -23,6 +23,22 @@ The look is Excalidraw's own dark mode, exactly, and its light mode when a reel 
 
 - **The theme re-skins the runtime too.** `K` (so kit helpers draw in ink), Excalifont captions with the spoken word in blue, and the follow card (a light-blue hand-lettered button with an ink border).
 
+## Light mode is the default
+
+The creator asked for light mode and "more detailed and great" UI, and called the result (`examples/iceberg/`) amazing (Oct 2026). Build every reel on the light board (`LT`: white paper, #1e1e1e ink, the raw Excalidraw colours) unless the user asks for dark. Blue water lines, hachured fills and pastel `xF` fills carry the colour; check every grey on white.
+
+## Detailed UI cards
+
+Every beat shows a crafted object, not a label. What the iceberg used (`examples/iceberg/src_build/story_body.js`):
+- **App windows** with title-bar dots, the product's real logo in the title, and real-looking content: a chat with typed turns, a Slack-style thread (avatars, "discount?", "code pls!", "tungsten cube?"), a payment screen with a "???" account, a 2016-style tweet card with the avatar, handle and the old bird.
+- **Paper objects:** a newspaper card with a dated header ("Feb 2019") and a ringed headline; a journal page with the real masthead (Nature) and a mini chart; a receipt with line items and a "self-reported" stamp.
+- **Physical props:** a vending machine with cubes in its slots and a PUSH flap; a phone with a battery gauge; a locked box; a chip with a tick beside a crossed-out graphics card; a timer that runs.
+- **Stat chips and badges** on the beat's number ("-10% -25% -15%" chips, "3,000,000+ AI models", "Sep 2025").
+- **A progress device in screen space:** the submarine with a "layer ①②③④⑤" meter fills on each stop.
+- **The end card keeps the journey:** the whole iceberg with one numbered label per stop (logo + name) beside the Follow button.
+- Gemma had no logo of its own and showed the Google G with its name; say so when a product has no mark.
+- The logo files are third-party trademarks and are not bundled in this repository; `examples/iceberg/lines.py` says where to fetch each one.
+
 ## Light and dark boards
 
 The creator asked for both themes mixed, by story section, and liked the result (`examples/valor_breakdown/`). `assets/excal_theme.js` supports both and stays dark unless a reel switches:
@@ -33,6 +49,7 @@ The creator asked for both themes mixed, by story section, and liked the result 
 - **One switch style for the whole reel: the wipe, or the tilt on a station board** (see One board with stations below). The wipe (`wipe(t, toDark, dir)` in `examples/valor_breakdown/scenes.js`) is a hachured band in the next theme's paper colour that sweeps across in 0.32 s, alternating direction. When it covers the frame, the ground, the board and the camera cut together. The wipe layer draws above the captions, so the band covers the outgoing caption; a caption left on top showed in the old colours with a thick outline over the new board.
 - **Sections that worked:** dark for the hook, the machinery and the stop; light for the friendly request, the receipt and ledger, and the ending. Five switches in 102 s felt intentional, not busy.
 - **Check every colour in both themes.** Grey annotations that read on white were too dim on #121212; on dark boards use a light grey (#b9bec5) for secondary text.
+- **A real person or product on screen gets their real photo or logo whenever one exists** (the creator, Oct 2026: "it's always better to use images for authors if possible or logos"; the CARE reel should have shown Matt Pocock's photo). Find it in research: a GitHub avatar (`https://github.com/<user>.png?size=460`), the person's site or press photo, the product's official logo. Save it to `<proj>/assets/` and frame it the board's way (see Tom's photo below, and `kit.logo` under Shapes). Beside the photo, put a hand-drawn name card (CARE's S7 block: a violet card the width of the station with the name at about 92 and the role at 56, and a second box for the number that makes them credible, a drawn star, "306,000", "saves"). The card alone is the fallback when no photo or logo can be found; say so in the delivery note. Check the brand's usage rules before you publish a logo.
 - **Tom's real photo** goes inside a drawn ring or polaroid frame (`<image>` clipped to a circle, with a rough.js ring on top), so it belongs to the board.
 
 ## One board with stations (the connected story)
@@ -44,6 +61,7 @@ The look the creator loved most (the quantization story, `examples/quant_story/s
 - **The grounds are drawn edge to edge** in an unclipped copy of the camera group placed before `SAFE` (`BGO`), so the margins outside the safe frame show the right colour during the tilt.
 - **The cast lives in screen space, always on screen:** the narrator on the left, the character (Sam: red cap, phone) on the right, both about 1.6× the usual figure size so their reactions read. They walk in place while the camera travels. The character's bubbles are size 60+ and change on the word that causes them ("see?!" on "faster and cheaper", popped on "So I checked", "hmm…" on "no drop", "aha!" on "thinks less", "thanks!" on "tip").
 - **Frame one shows the character and the belief:** Sam frowning at "Claude got dumber!" on frame 0; the theory cloud grows from his head within 3 s.
+- **The travelling object is one actor group that holds every state** (`APP` and `appA` in `examples/care/src_build/story_body.js`: the blocks, cracks, patches, the scribble ball and the neat grid all live in it). It moves between stations with its actor, so a later line can bring it back ("back to the mud ball" dropped it from row 1 into row 2). The ball untangles by tweening each strand's `strokeDashoffset` from 0 to its length while the blocks fly to their grid slots. A board can grow a column or a row for the story; CARE used four columns (`COLX = [0, 1150, 2300, 3450]`) in three rows snaking left-right-left.
 - **The recap is the board itself:** on the close the camera pulls back over the whole board. Each station gets a numbered label (44 px) in story order, the two rows get titles ("Sam's theory", "what really happened"), and the arrows between stations reappear. Keep the pulled-back board inside x 120-960; a zoom that pushed it to 66 px from the edge was reverted.
 
 ## Type
@@ -53,9 +71,10 @@ The look the creator loved most (the quantization story, `examples/quant_story/s
 
   | Text | Size |
   |---|---|
-  | headline words | 96 |
+  | headline words | 96; on a station board 88-100, and 122-156 for the hook question |
   | the address at the end | 100 |
   | content in windows | 40-48 |
+  | labels on a station board | 46-56 |
   | the smallest readable label | 36 (about 31 px on the phone); 40-44 for UI text a viewer should read |
 
 - **Fake UI texture** nobody needs to read gets `data-deco`. A label inside a scaled figure scales its font up (`Math.ceil(36 / scale)`); Valor's tag measured 26 px before that fix.
@@ -95,10 +114,11 @@ One continuous whiteboard, which the camera travels across:
 
   Keep everything important above the caption.
 - **Full-bleed effects** go behind the safe frame with `svg.insertBefore(node, SAFE)`. A tint clipped to the safe box showed its edges.
-- **Text must fit its box.** Measure every label with `getComputedTextLength()` and shorten the words before shrinking the font. "1. one theme switch, whole app" ran past the plan window's border for 10 s; "1. one switch, whole app" fits. Stickers, stamps and notes stay at least 20 px inside the panel they mark.
+- **Text must fit its box.** Measure every label with `getComputedTextLength()` and shorten the words before shrinking the font. Size the box to the text: a `wr(..., maxW)` too narrow for its text makes `fitT` shrink it below the floor without a word ("most coding AIs" drew at 32 and failed the check). "1. one theme switch, whole app" ran past the plan window's border for 10 s; "1. one switch, whole app" fits. Stickers, stamps and notes stay at least 20 px inside the panel they mark.
 - **Vary the composition.** One window top right and the hero bottom left in all 21 shots read as a template. Stack two windows, put objects on the ground, bring a second figure in, or move the hero across.
 - **Fill the frame:**
   - the main window is 800-900 px wide;
+  - on a station board, the props span the content area, y 330-1290 and x 135-945: the main prop takes at least 60% of the station width (the CARE app box is 465 × 403), a human figure is drawn at scale 1.2, a robot beside a human at 1.1-1.4 and a robot as the subject at 2.2. The first CARE draft drew props at about 40% and left the top 45% of the frame empty; compare the first sheet with a delivered reel's cover before building further;
   - no band of the stage stays empty for more than about 1 s; push the camera in on the hero rather than show an empty board.
 
 ## Characters
@@ -136,5 +156,8 @@ The difference between "AI generated" and crafted is detail drawn the Excalidraw
   - scribble underlines;
   - a red circle around a key word;
   - a cross over a wrong option.
+- **Evidence charts:** a rough axis, two bars about 180 wide with labels at 50, the headline number on a sticky note ("211 million / lines of code"), and the source on two short lines of at least 40 beside it ("GitClear," / "2025 report"), with an orange ring on the key label on its word.
+- **"Not just her":** the same object drawn several times mid-frame at scale 1.3 (three more mud balls, "other apps too"), which then slide up to make room for the evidence.
+- **Ticks are drawn,** not typed: Excalifont may lack "✓", so `testPill()` draws its tick with the `tick()` helper.
 - **Stamps:** hachured, rotated, with ink splatter (`splat`), placed only on the thing they judge.
 - **The cursor:** a hand-drawn arrow that eases in and clicks, with a press squash and a blue click ring.

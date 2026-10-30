@@ -1,0 +1,26 @@
+  // ---------- the boil clock ----------
+  FIGS.forEach((Fg) => Fg.keys.sort((a, b) => a[0] - b[0]));
+  const boilAt = (v0) => {
+    const k = Math.max(0, Math.floor(v0 / BOIL_DT));
+    for (const it of BOIL) {
+      const i = (k + it.ph) % 3;
+      if (i !== it.cur) { it.vars[it.cur].setAttribute("visibility", "hidden"); it.vars[i].setAttribute("visibility", "visible"); it.cur = i; }
+    }
+    FIGS.forEach((Fg) => {
+      let act = Fg.keys[0][1];
+      for (const [t, n] of Fg.keys) { if (t <= v0) act = n; else break; }
+      const key = act + ":" + (k % 3);
+      if (key !== Fg.cur) {
+        Object.keys(Fg.poses).forEach((n) => Fg.poses[n].forEach((g, j) => g.setAttribute("visibility", n === act && j === k % 3 ? "visible" : "hidden")));
+        Fg.cur = key;
+      }
+    });
+    HOOKS.forEach((f) => f(v0));
+  };
+  const clock = { v: 0 };
+  B.fromTo(clock, { v: 0 }, { v: END_T, duration: END_T, ease: "none", immediateRender: false, onUpdate: () => boilAt(clock.v) }, 0);
+  boilAt(0);
+  const CA = A(CAM, F(0, 0, 0.97));
+  camQ.sort((a, b) => a[0] - b[0]).forEach(([t, p, dur, ease]) => CA.to(p, t, dur, ease));
+  return {};
+}
