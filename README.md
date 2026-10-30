@@ -4,12 +4,13 @@ A [Claude Code](https://claude.com/claude-code) skill that makes vertical 9:16 e
 
 ![Eight frames from the Valor breakdown reel](reference/look.png)
 
-Everything the skill needs is in this repository: the method, the theme, the build pipeline, and five finished example reels. You supply an OpenAI API key for the voice.
+Everything the skill needs is in this repository: the method, the theme, the build pipeline, and seven finished example reels. You supply an OpenAI API key for the voice.
 
 ## What it does
 
-- **The look:** hand-drawn rough.js shapes that "boil" like a sketch video, and Excalifont handwriting. The board is dark, or light and dark boards are mixed by story section with a hand-drawn wipe between them.
-- **The story:** five arcs, each with a finished example:
+- **The look:** hand-drawn rough.js shapes that "boil" like a sketch video, and Excalifont handwriting. The board is light by default, with detailed hand-drawn app cards, receipts, newspapers and real logos on every beat. It can also be dark, or light and dark boards mixed by story section with a hand-drawn wipe between them.
+- **The story:** six arcs, each with a finished example:
+  - a depth story, the default (about 85-89.5 s: a journey through 4-5 stops, each told as a short story, such as a submarine sinking past the layers of an "AI model iceberg");
   - a connected story (about 60 s: one character, one object carried through every shot, each line caused by the one before);
   - a discovery story (about 55 s: a narrator telling a friend about a site or a list, with one favourite told properly);
   - a hero story and a problem story (40-55 s);
@@ -71,7 +72,7 @@ It delivers an MP4 and a cover image, and it posts nothing unless you ask.
 | `pipeline/scripts/` | `make_reel.py` (voice, word timings, captions, music, build), `sfxlib.py` (sound effects), `check_vo.py` (checks each voice line against the script), `tighten.py` (shortens long pauses), `measure_words.py` (exact word times), `review_sheet.sh`, `safe_check.py`, `setup.sh`. |
 | `pipeline/assets/` | The HyperFrames page template and the drawing runtime. |
 | `assets/` | The sketch theme (`excal_theme.js`), rough.js 4.6.6 patched to use a seeded random generator, and the Excalifont and Comic Shanns fonts. |
-| `examples/` | Five finished reels: `darkhorse` (discovery story), `quant_story` (connected story), `valor` (hero story), `jev` (problem story), `valor_breakdown` (breakdown). Each has `lines.py` (script, sources and voice settings), `scenes.js` (the animation) and `sfx.py` (sound effects). `darkhorse` and `quant_story` build `scenes.js` from parts with `build_scenes.sh`. |
+| `examples/` | Seven finished reels: `iceberg` (depth story, light), `care` (connected story with an object that changes state), `darkhorse` (discovery story), `quant_story` (connected story), `valor` (hero story), `jev` (problem story), `valor_breakdown` (breakdown). Each has `lines.py` (script, sources and voice settings), `scenes.js` (the animation) and `sfx.py` (sound effects). `iceberg`, `care`, `darkhorse` and `quant_story` build `scenes.js` from parts with `build_scenes.sh`. |
 
 ## Costs
 
@@ -80,8 +81,9 @@ It delivers an MP4 and a cover image, and it posts nothing unless you ask.
 
 ## Notes
 
-- The people and products in the examples are real: Valor, an AI engineer built by Tom Counsell; Jev, an AI decision model; Dark Horse Labs, a list of open-source projects. The names of Valor's client companies are replaced with "Client A" to "Client F".
-- The facts in the example scripts were checked against their sources in October 2026. Each `lines.py` (and `examples/darkhorse/script.md`) lists them.
+- The people and products in the examples are real: Valor, an AI engineer built by Tom Counsell; Jev, an AI decision model; Dark Horse Labs, a list of open-source projects; Matt Pocock, a coding teacher whose idea the CARE reel retells; and the AI models and companies in the iceberg reel. Nadia in the CARE reel is invented. The names of Valor's client companies are replaced with "Client A" to "Client F".
+- The facts in the example scripts were checked against their sources in October 2026. Each `lines.py` (and the `script.md` and `research.md` files) lists them.
+- The iceberg example draws real logos, which are third-party trademarks. The logo files are not in this repository; `examples/iceberg/lines.py` says where to fetch each one.
 - The reference files record what worked and what failed on real reels. "The creator" in them is the person those reels were made for.
 
 ## License

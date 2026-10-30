@@ -1,0 +1,28 @@
+  // ---------- the boil clock ----------
+  FIGS.forEach((Fg) => Fg.keys.sort((a, b) => a[0] - b[0]));
+  const boilAt = (v0) => {
+    const k = Math.max(0, Math.floor(v0 / BOIL_DT));
+    for (const it of BOIL) {
+      const i = (k + it.ph) % 3;
+      if (i !== it.cur) { it.vars[it.cur].setAttribute("visibility", "hidden"); it.vars[i].setAttribute("visibility", "visible"); it.cur = i; }
+    }
+    FIGS.forEach((Fg) => {
+      let act = Fg.keys[0][1];
+      for (const [t, n] of Fg.keys) { if (t <= v0) act = n; else break; }
+      const key = act + ":" + (k % 3);
+      if (key !== Fg.cur) {
+        Object.keys(Fg.poses).forEach((n) => Fg.poses[n].forEach((g, j) => g.setAttribute("visibility", n === act && j === k % 3 ? "visible" : "hidden")));
+        Fg.cur = key;
+      }
+    });
+    HOOKS.forEach((f) => f(v0));
+  };
+  const clock = { v: 0 };
+  B.fromTo(clock, { v: 0 }, { v: END_T, duration: END_T, ease: "none", immediateRender: false, onUpdate: () => boilAt(clock.v) }, 0);
+  boilAt(0);
+  const CA = A(CAM, F(1, 0, 0.97));
+  let camBusy = -1, camClash = 0;   // never let two camera moves overlap (overlapping actor tweens fight and flash old framings)
+  camQ.sort((a, b) => a[0] - b[0]).forEach(([t, p, dur, ease]) => { if (t < camBusy - 1e-6) { camClash++; console.warn("cam clash at " + t.toFixed(3) + " busy until " + camBusy.toFixed(3)); const cut = camBusy - t; t = camBusy; dur = Math.max(0.02, dur - cut); } CA.to(p, t, dur, ease); camBusy = t + dur; });
+  if (camClash) console.warn("camera moves clipped to avoid overlap:", camClash);
+  return {};
+}
